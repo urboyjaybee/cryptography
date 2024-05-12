@@ -26,7 +26,7 @@ def run():
 
     st.write("# 🔒CryptoExplorer🔑")
 
-    st.sidebar.success("Select a demo above.")
+    st.sidebar.success("Select an algorithm above.")
 
     st.markdown(
         """Welcome! This is CryptoExplorer where you can explore encrypting and decrypting
