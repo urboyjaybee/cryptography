@@ -2,6 +2,39 @@ import streamlit as st
 
 st.header("Caesar Cipher")
 
+st.markdown(
+    """
+**Caesar Cipher: A Classic Substitution Cipher**
+
+The Caesar cipher is one of the simplest and most widely known encryption techniques. It's a type of substitution cipher in which each letter in the plaintext is shifted a certain number of places down the alphabet.
+
+**History**
+
+* Named after Julius Caesar, who used it to protect military communications.
+* It's a simple monoalphabetic substitution cipher, meaning each letter is always replaced by the same letter in the ciphertext.
+* Although easily broken, it serves as a foundational example in cryptography.
+
+**Pseudocode Process**
+
+1. **Encryption**
+   * For each letter in the plaintext:
+      * Determine its position in the alphabet (e.g., A=0, B=1, ...).
+      * Add the shift value to the letter's position.
+      * If the result goes beyond the end of the alphabet, wrap around to the beginning.
+      * Find the letter at the new position in the alphabet.
+      * Replace the original letter with the new letter.
+
+2. **Decryption**
+   * Same as encryption, but subtract the shift value instead of adding.
+
+**Example (Shift=3):**
+Plaintext:  HELLO
+Ciphertext: KHOOR
+
+**Important Note:** The Caesar cipher is very weak due to the limited number of possible keys (26). It is easily broken with frequency analysis or simple brute-force methods.
+"""
+)
+
 def encrypt_decrypt(text, shift_keys, ifdecrypt):
     """Encrypts or decrypts text using the Caesar Cipher.
 

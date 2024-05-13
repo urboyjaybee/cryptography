@@ -2,6 +2,42 @@ import streamlit as st
 
 st.header("Block Cipher")
 
+st.markdown(
+    """
+**Block Ciphers: Building Blocks of Modern Cryptography**
+
+Block ciphers are symmetric encryption algorithms that operate on fixed-length groups of bits called blocks. They transform plaintext blocks into ciphertext blocks using a secret key.
+
+**History**
+
+* Originated in the mid-20th century, with DES (Data Encryption Standard) as an early example.
+* AES (Advanced Encryption Standard) is a widely used modern block cipher.
+* Offer greater security than simple stream ciphers due to their ability to diffuse and confuse data within blocks.
+
+**Pseudocode Process (XOR Example)**
+
+1. **Padding:**
+   * If the plaintext isn't a multiple of the block size, add padding to make it fit.
+
+2. **Encryption**
+   * Divide the plaintext into blocks.
+   * For each block:
+      * Apply the XOR operation to each bit in the block with the corresponding bit in the key.
+      * The result is the ciphertext block.
+
+3. **Decryption**
+   * Same as encryption, but applying XOR with the key to the ciphertext blocks recovers the original plaintext.
+
+**Example (Block Size = 8 bits, Key = 10101010):**
+Plaintext block: 01101001
+Key:            10101010
+Ciphertext block: 11000011
+
+
+**Important Note:** This is a simplified example using XOR. Real block ciphers like AES use much more complex transformations to provide strong security.
+"""
+)
+
 def pad(data, block_size):    # CMS (Cryptographic Message Syntax). This pads with the same value as the number of padding bytes.
     # Calculate the number of bytes needed to reach a multiple of block size.
     padding_length = block_size - len(data) % block_size  
@@ -139,6 +175,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-st.divider()
-st.snow()
