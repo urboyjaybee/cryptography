@@ -2,15 +2,17 @@ import streamlit as st
 
 public_key = None
 private_key = None
+key_generated = False
 
 def generate_keypair(p, q):
-    global public_key, private_key
+    global public_key, private_key, key_generated
     n = p * q
     t = (p - 1) * (q - 1)
     e = find_public_key(t)
     d = find_private_key(e, t)
     public_key = (n, e)
     private_key = (n, d)
+    key_generated = True
 
 def find_public_key(t):
     e = 2
@@ -54,7 +56,6 @@ def decrypt(ciphertext, private_key):
     return (ciphertext ** d) % n
 
 st.title("RSA Cipher")
-
 st.markdown(
     """
 **RSA Cipher: A Cornerstone of Public-Key Cryptography**
@@ -88,7 +89,6 @@ The RSA cipher is a widely used cryptographic algorithm that enables secure data
 **Important Note:** The strength of RSA lies in choosing large prime numbers (p and q) to create a large modulus (n). Larger keys make it computationally infeasible to factor n and determine the private key (d).
 """
 )
-
 p = st.number_input("Enter a prime number (p):", min_value=2, step=1)
 q = st.number_input("Enter a prime number (q):", min_value=2, step=1)
 
@@ -106,7 +106,7 @@ action = st.radio("Select Action:", ["Encrypt", "Decrypt"])
 
 if action == "Encrypt":
     if st.button("Encrypt"):
-        if public_key:
+        if key_generated:
             encrypted_message = encrypt(int(message), public_key)
             st.write("Encrypted Message:", encrypted_message)
         else:
@@ -114,7 +114,7 @@ if action == "Encrypt":
 
 if action == "Decrypt":
     if st.button("Decrypt"):
-        if private_key:
+        if key_generated:
             decrypted_message = decrypt(int(message), private_key)
             st.write("Decrypted Message:", decrypted_message)
         else:
