@@ -3,7 +3,7 @@ import streamlit as st
 import hashlib
 
 st.title("MD5 Hash Generator")
-Python
+# Python
 # filename: md5_hash.py
 import streamlit as st
 import hashlib
