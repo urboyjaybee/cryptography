@@ -12,7 +12,7 @@ def generate_keypair(p, q):
     d = find_private_key(e, t)
     public_key = (n, e)
     private_key = (n, d)
-    key_generated = True
+    key_generated = False  # Update key_generated to True after successful key generation
 
 def find_public_key(t):
     e = 2
@@ -89,6 +89,7 @@ The RSA cipher is a widely used cryptographic algorithm that enables secure data
 **Important Note:** The strength of RSA lies in choosing large prime numbers (p and q) to create a large modulus (n). Larger keys make it computationally infeasible to factor n and determine the private key (d).
 """
 )
+
 p = st.number_input("Enter a prime number (p):", min_value=2, step=1)
 q = st.number_input("Enter a prime number (q):", min_value=2, step=1)
 

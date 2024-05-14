@@ -14,7 +14,42 @@ def xor_decrypt(ciphertext, key):
     """Decrypts ciphertext using XOR cipher with the given key."""
     return xor_encrypt(ciphertext, key)  # XOR decryption is the same as encryption
 
-st.header("XOR Cipher")
+def encrypt_text(plaintext, key):
+    """Encrypts plaintext using XOR cipher with the given key."""
+    plaintext_bytes = plaintext.encode()
+    encrypted_bytes = xor_encrypt(plaintext_bytes, key.encode())
+    return encrypted_bytes.hex()
+
+def decrypt_text(ciphertext_hex, key):
+    """Decrypts ciphertext (in hexadecimal format) using XOR cipher with the given key."""
+    try:
+        ciphertext_bytes = bytes.fromhex(ciphertext_hex)
+        decrypted_bytes = xor_decrypt(ciphertext_bytes, key.encode())
+        return decrypted_bytes.decode()
+    except ValueError:
+        return None
+
+def encrypt_file(input_path, output_path, key):
+    """Encrypts a file using XOR cipher with the given key."""
+    with open(input_path, 'rb') as file_in:
+        plaintext_bytes = file_in.read()
+    
+    encrypted_bytes = xor_encrypt(plaintext_bytes, key.encode())
+    
+    with open(output_path, 'wb') as file_out:
+        file_out.write(encrypted_bytes)
+
+def decrypt_file(input_path, output_path, key):
+    """Decrypts a file using XOR cipher with the given key."""
+    with open(input_path, 'rb') as file_in:
+        ciphertext_bytes = file_in.read()
+    
+    decrypted_bytes = xor_decrypt(ciphertext_bytes, key.encode())
+    
+    with open(output_path, 'wb') as file_out:
+        file_out.write(decrypted_bytes)
+
+st.header("XOR Cipher - Text and File Encryption")
 st.markdown(
     """
 **XOR Cipher: Simple Yet Effective Symmetric Encryption**
@@ -47,34 +82,50 @@ Ciphertext: 11000011
 """
 )
 
-plaintext = st.text_area("Plain Text:")
-key = st.text_input("Key:")
+# Choose between Text or File Encryption/Decryption
+option = st.radio("Select Mode:", ("Encrypt Text", "Decrypt Text", "Encrypt File", "Decrypt File"))
 
-if st.button("Encrypt"):
-    if not plaintext or not key:
-        st.warning("Please enter both plaintext and key.")
-    else:
-        plaintext_bytes = plaintext.encode()
-        key_bytes = key.encode()
-
-        if len(key_bytes) > len(plaintext_bytes):
-            st.error("Key length should be less than or equal to plaintext length.")
+if option == "Encrypt Text":
+    plaintext = st.text_area("Plain Text:")
+    key = st.text_input("Key:")
+    if st.button("Encrypt"):
+        if not plaintext or not key:
+            st.warning("Please enter both plaintext and key.")
         else:
-            encrypted_text = xor_encrypt(plaintext_bytes, key_bytes)
-            st.write("Ciphertext (Hex):", encrypted_text.hex())
+            encrypted_text_hex = encrypt_text(plaintext, key)
+            st.write("Ciphertext (Hex):", encrypted_text_hex)
 
-if st.button("Decrypt"):
-    if not plaintext or not key:
-        st.warning("Please enter both ciphertext and key.")
-    else:
-        try:
-            ciphertext_bytes = bytes.fromhex(plaintext)  # Assuming input is in hexadecimal format
-            key_bytes = key.encode()
-
-            if len(key_bytes) > len(ciphertext_bytes):
-                st.error("Key length should be less than or equal to ciphertext length.")
+elif option == "Decrypt Text":
+    ciphertext_hex = st.text_area("Ciphertext (Hex):")
+    key = st.text_input("Key:")
+    if st.button("Decrypt"):
+        if not ciphertext_hex or not key:
+            st.warning("Please enter both ciphertext (in Hex) and key.")
+        else:
+            decrypted_text = decrypt_text(ciphertext_hex, key)
+            if decrypted_text:
+                st.write("Decrypted Text:", decrypted_text)
             else:
-                decrypted_text = xor_decrypt(ciphertext_bytes, key_bytes)
-                st.write("Decrypted:", decrypted_text.decode())
-        except ValueError:
-            st.error("Invalid ciphertext. Please enter valid hexadecimal ciphertext.")
+                st.error("Invalid ciphertext or key.")
+
+elif option == "Encrypt File":
+    uploaded_file = st.file_uploader("Choose a file for encryption:")
+    key = st.text_input("Key:")
+    if st.button("Encrypt File"):
+        if not uploaded_file or not key:
+            st.warning("Please upload a file and enter a key for encryption.")
+        else:
+            output_path = f"encrypted_{uploaded_file.name}"
+            encrypt_file(uploaded_file, output_path, key)
+            st.success(f"File encrypted and saved as: {output_path}")
+
+elif option == "Decrypt File":
+    uploaded_encrypted_file = st.file_uploader("Choose a file for decryption:")
+    key = st.text_input("Key:")
+    if st.button("Decrypt File"):
+        if not uploaded_encrypted_file or not key:
+            st.warning("Please upload an encrypted file and enter a key for decryption.")
+        else:
+            output_path = f"decrypted_{uploaded_encrypted_file.name}"
+            decrypt_file(uploaded_encrypted_file, output_path, key)
+            st.success(f"File decrypted and saved as: {output_path}")
