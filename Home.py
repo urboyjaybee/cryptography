@@ -25,6 +25,7 @@ def run():
     )
 
     st.write("# 🔒CryptoExplorer🔑")
+    st.write("By Group 3 - BSCS 3A || [JOHN PAUL QUIAL, JOHNBEN NADAL, JUSTINE LABIOS]")
 
     st.sidebar.success("Select an algorithm above.")
 
