@@ -44,6 +44,41 @@ def diffie_hellman(p, g, a, b):
 
 st.title("Diffie-Hellman Key Exchange")
 
+st.markdown(
+    """
+    **Diffie-Hellman Key Exchange**
+
+    The Diffie-Hellman key exchange is a method for securely exchanging cryptographic keys over a public channel. 
+    It allows two parties to agree upon a shared secret key without revealing the key to any eavesdropper.
+
+    **Algorithm Overview:**
+
+    1. **Key Generation:**
+       - Choose a large prime number \( p \) and a primitive root \( g \) modulo \( p \).
+    
+    2. **Private Key Generation:**
+       - Alice chooses a secret integer \( a \) (her private key).
+       - Bob chooses a secret integer \( b \) (his private key).
+
+    3. **Public Key Exchange:**
+       - Alice computes \( A = g^a \mod p \) (her public key).
+       - Bob computes \( B = g^b \mod p \) (his public key).
+
+    4. **Secret Key Computation:**
+       - Alice computes the secret key \( K = B^a \mod p \).
+       - Bob computes the secret key \( K = A^b \mod p \).
+
+    **Security Note:**
+    The security of the Diffie-Hellman key exchange relies on the discrete logarithm problem, which is difficult to solve efficiently.
+
+    **Input Requirements:**
+    - \( p \) must be a prime number.
+    - \( g \) must be a primitive root modulo \( p \).
+    - \( a \) and \( b \) must be integers less than \( p \).
+
+    """
+)
+
 # Generate random prime numbers p and g
 p, g = generate_primes(100, 1000)
 
