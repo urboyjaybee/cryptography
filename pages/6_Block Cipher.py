@@ -1,4 +1,6 @@
 import streamlit as st
+import hashlib
+from io import BytesIO
 
 def pad(data, block_size):
     padding_length = block_size - (len(data) % block_size)
@@ -35,6 +37,9 @@ def xor_decrypt(ciphertext, key, block_size):
         decrypted_data += decrypted_block
     unpadded_decrypted_data = unpad(decrypted_data)
     return unpadded_decrypted_data
+
+def derive_key(key, length):
+    return hashlib.sha256(key).digest()[:length]
 
 def main():
     st.title("Block Cipher - XOR Encryption")
@@ -82,24 +87,46 @@ def main():
         """
     )
 
+    st.subheader("Text Encryption")
+
     plaintext = st.text_input("Plaintext:")
     key = st.text_input("Key:")
     block_size = st.number_input("Block Size:", min_value=1, max_value=1024, value=8, step=1)
 
-    encrypt_button = st.button("Encrypt")
-    decrypt_button = st.button("Decrypt")
-
-    if encrypt_button and plaintext and key and block_size:
-        key_bytes = bytes(key, encoding='utf-8')
+    if st.button("Encrypt Text") and plaintext and key:
+        key_bytes = derive_key(bytes(key, encoding='utf-8'), block_size)
         encrypted_data = xor_encrypt(bytes(plaintext, encoding='utf-8'), key_bytes, block_size)
         st.subheader("Encrypted Data:")
         st.write(encrypted_data.hex())
-
-    if decrypt_button and plaintext and key and block_size:
-        key_bytes = bytes(key, encoding='utf-8')
+    
+    if st.button("Decrypt Text") and plaintext and key:
+        key_bytes = derive_key(bytes(key, encoding='utf-8'), block_size)
         decrypted_data = xor_decrypt(bytes.fromhex(plaintext), key_bytes, block_size)
         st.subheader("Decrypted Data:")
         st.write(decrypted_data.decode('utf-8'))
+
+    st.subheader("File Encryption")
+
+    uploaded_file = st.file_uploader("Choose a file")
+    file_key = st.text_input("File Key:")
+    file_block_size = st.number_input("File Block Size:", min_value=1, max_value=1024, value=8, step=1)
+
+    if uploaded_file and file_key:
+        key_bytes = derive_key(bytes(file_key, encoding='utf-8'), file_block_size)
+        
+        if st.button("Encrypt File"):
+            plaintext = uploaded_file.read()
+            encrypted_data = xor_encrypt(plaintext, key_bytes, file_block_size)
+            encrypted_file = BytesIO(encrypted_data)
+            encrypted_file.name = "encrypted_file.bin"
+            st.download_button(label="Download Encrypted File", data=encrypted_file, file_name="encrypted_file.bin")
+        
+        if st.button("Decrypt File"):
+            ciphertext = uploaded_file.read()
+            decrypted_data = xor_decrypt(ciphertext, key_bytes, file_block_size)
+            decrypted_file = BytesIO(decrypted_data)
+            decrypted_file.name = "decrypted_file"
+            st.download_button(label="Download Decrypted File", data=decrypted_file, file_name="decrypted_file")
 
 if __name__ == "__main__":
     main()
