@@ -1,20 +1,6 @@
 import streamlit as st
 import random
-
-def is_prime(n):
-    """Check if a number is prime."""
-    if n <= 1:
-        return False
-    if n <= 3:
-        return True
-    if n % 2 == 0 or n % 3 == 0:
-        return False
-    i = 5
-    while i * i <= n:
-        if n % i == 0 or n % (i + 2) == 0:
-            return False
-        i += 6
-    return True
+from sympy import isprime, primerange, primitive_root
 
 def modexp(base, exponent, modulus):
     """Modular exponentiation."""
@@ -26,13 +12,12 @@ def modexp(base, exponent, modulus):
         base = (base * base) % modulus
     return result
 
-def generate_primes(min_val, max_val):
-    """Generate two distinct prime numbers within the given range."""
-    primes = []
-    for num in range(min_val, max_val + 1):
-        if is_prime(num):
-            primes.append(num)
-    return random.sample(primes, 2)
+def generate_prime_and_primitive_root(min_val, max_val):
+    """Generate a prime number and its primitive root within the given range."""
+    primes = list(primerange(min_val, max_val))
+    prime = random.choice(primes)
+    prim_root = primitive_root(prime)
+    return prime, prim_root
 
 def diffie_hellman(p, g, a, b):
     """Perform the Diffie-Hellman key exchange."""
@@ -80,7 +65,7 @@ st.markdown(
 )
 
 # Generate random prime numbers p and g
-p, g = generate_primes(100, 1000)
+p, g = generate_prime_and_primitive_root(100, 1000)
 
 st.write(f"Prime number (p): {p}")
 st.write(f"Primitive root (g): {g}")
@@ -92,7 +77,7 @@ a = st.number_input("Alice's Private Key (a):", min_value=1, max_value=p-1, key=
 b = st.number_input("Bob's Private Key (b):", min_value=1, max_value=p-1, key="bob")
 
 if st.button("Perform Key Exchange"):
-    if not (is_prime(p) and modexp(g, p-1, p) == 1 and a < p and b < p):
+    if not (isprime(p) and modexp(g, p-1, p) == 1 and a < p and b < p):
         st.error("Invalid input. Please make sure 'p' is prime, 'g' is a primitive root modulo 'p', and 'a' and 'b' are less than 'p'.")
     else:
         secret_key_A, secret_key_B = diffie_hellman(p, g, a, b)
