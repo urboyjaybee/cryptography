@@ -1,4 +1,5 @@
 import streamlit as st
+from io import BytesIO
 
 def xor_encrypt(plaintext, key):
     """Encrypts plaintext using XOR cipher with the given key."""
@@ -29,25 +30,15 @@ def decrypt_text(ciphertext_hex, key):
     except ValueError:
         return None
 
-def encrypt_file(input_path, output_path, key):
-    """Encrypts a file using XOR cipher with the given key."""
-    with open(input_path, 'rb') as file_in:
-        plaintext_bytes = file_in.read()
-    
-    encrypted_bytes = xor_encrypt(plaintext_bytes, key.encode())
-    
-    with open(output_path, 'wb') as file_out:
-        file_out.write(encrypted_bytes)
+def encrypt_file(file_content, key):
+    """Encrypts file content using XOR cipher with the given key."""
+    encrypted_bytes = xor_encrypt(file_content, key.encode())
+    return encrypted_bytes
 
-def decrypt_file(input_path, output_path, key):
-    """Decrypts a file using XOR cipher with the given key."""
-    with open(input_path, 'rb') as file_in:
-        ciphertext_bytes = file_in.read()
-    
-    decrypted_bytes = xor_decrypt(ciphertext_bytes, key.encode())
-    
-    with open(output_path, 'wb') as file_out:
-        file_out.write(decrypted_bytes)
+def decrypt_file(file_content, key):
+    """Decrypts file content using XOR cipher with the given key."""
+    decrypted_bytes = xor_decrypt(file_content, key.encode())
+    return decrypted_bytes
 
 st.header("XOR Cipher - Text and File Encryption")
 st.markdown(
@@ -115,9 +106,11 @@ elif option == "Encrypt File":
         if not uploaded_file or not key:
             st.warning("Please upload a file and enter a key for encryption.")
         else:
-            output_path = f"encrypted_{uploaded_file.name}"
-            encrypt_file(uploaded_file, output_path, key)
-            st.success(f"File encrypted and saved as: {output_path}")
+            file_content = uploaded_file.read()
+            encrypted_content = encrypt_file(file_content, key)
+            encrypted_file = BytesIO(encrypted_content)
+            encrypted_file.name = f"encrypted_{uploaded_file.name}"
+            st.download_button(label="Download Encrypted File", data=encrypted_file, file_name=encrypted_file.name)
 
 elif option == "Decrypt File":
     uploaded_encrypted_file = st.file_uploader("Choose a file for decryption:")
@@ -126,6 +119,8 @@ elif option == "Decrypt File":
         if not uploaded_encrypted_file or not key:
             st.warning("Please upload an encrypted file and enter a key for decryption.")
         else:
-            output_path = f"decrypted_{uploaded_encrypted_file.name}"
-            decrypt_file(uploaded_encrypted_file, output_path, key)
-            st.success(f"File decrypted and saved as: {output_path}")
+            file_content = uploaded_encrypted_file.read()
+            decrypted_content = decrypt_file(file_content, key)
+            decrypted_file = BytesIO(decrypted_content)
+            decrypted_file.name = f"decrypted_{uploaded_encrypted_file.name}"
+            st.download_button(label="Download Decrypted File", data=decrypted_file, file_name=decrypted_file.name)
